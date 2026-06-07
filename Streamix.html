@@ -1,0 +1,443 @@
+<!DOCTYPE html>
+<html lang="es" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Streamix | Ecosistema de Streaming Premium</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;700;800&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            blue: '#2575fc',
+                            neon: '#00d2ff',
+                            dark: '#09090b',
+                            zinc: '#18181b'
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Inter', 'sans-serif'],
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body { transition: background-color 0.3s ease, color 0.3s ease; }
+        .glass { background: rgba(255, 255, 255, 0.03); backdrop-filter: blur(10px); border: 1px solid rgba(255, 255, 255, 0.05); }
+        .light .glass { background: rgba(0, 0, 0, 0.03); border: 1px solid rgba(0, 0, 0, 0.05); }
+        .card-shadow { transition: all 0.3s ease; }
+        .card-shadow:hover { transform: translateY(-5px); box-shadow: 0 10px 25px -5px rgba(37, 117, 252, 0.2); }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #09090b; }
+        ::-webkit-scrollbar-thumb { background: #2575fc; border-radius: 10px; }
+    </style>
+</head>
+<body class="bg-brand-dark text-zinc-400 font-sans min-h-screen light:bg-zinc-50 light:text-zinc-800 transition-colors duration-300">
+
+    <!-- NAVBAR -->
+    <nav class="sticky top-0 z-50 glass border-b border-white/5 dark:bg-black/50 light:bg-white/70 backdrop-blur-md">
+        <div class="max-w-7xl mx-auto px-6 h-20 flex items-center justify-between">
+            <div class="flex items-center gap-2 cursor-pointer select-none" id="logo-admin-trigger">
+                <div class="w-10 h-10 bg-brand-blue rounded-xl flex items-center justify-center shadow-lg shadow-brand-blue/30">
+                    <i class="fas fa-play text-white ml-1"></i>
+                </div>
+                <span class="text-2xl font-extrabold tracking-tighter text-white light:text-zinc-900">STREAM<span class="text-brand-blue">IX</span></span>
+            </div>
+
+            <div class="flex items-center gap-6">
+                <!-- Theme Toggle -->
+                <button id="theme-toggle" class="p-2.5 rounded-full hover:bg-zinc-800 light:hover:bg-zinc-200 transition-colors">
+                    <i id="theme-icon" class="fas fa-moon text-xl"></i>
+                </button>
+            </div>
+        </div>
+    </nav>
+
+    <!-- HERO SECTION -->
+    <header class="max-w-7xl mx-auto px-6 pt-16 pb-8 text-center">
+        <h1 class="text-4xl md:text-6xl font-black text-white light:text-zinc-900 mb-4 tracking-tight">
+            Acceso Premium al <span class="text-brand-blue">Mejor Entretenimiento</span>
+        </h1>
+        <p class="text-zinc-500 max-w-2xl mx-auto text-lg">
+            Cuentas 100% garantizadas con entrega inmediata. Selecciona tu plataforma favorita y empieza a disfrutar hoy mismo.
+        </p>
+    </header>
+
+    <!-- MAIN GRID -->
+    <main class="max-w-7xl mx-auto px-6 py-12">
+        <div id="product-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-8">
+            <!-- Products injected by JS -->
+        </div>
+    </main>
+
+    <!-- MODAL: COMPRA -->
+    <div id="purchase-modal" class="fixed inset-0 z-[60] hidden flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm">
+        <div class="bg-zinc-900 light:bg-white w-full max-w-md rounded-3xl overflow-hidden border border-white/10 shadow-2xl animate-in fade-in zoom-in duration-300">
+            <div class="p-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h3 class="text-xl font-bold text-white light:text-zinc-900">Finalizar Suscripción</h3>
+                    <button onclick="closeModal('purchase-modal')" class="text-zinc-500 hover:text-white"><i class="fas fa-times"></i></button>
+                </div>
+
+                <div id="modal-product-info" class="mb-6 p-4 rounded-2xl bg-zinc-800/50 light:bg-zinc-100 flex items-center gap-4">
+                    <!-- Dynamic Info -->
+                </div>
+
+                <form id="purchase-form" class="space-y-4">
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-zinc-500 mb-1.5">Nombre Completo del Comprador</label>
+                        <input type="text" id="buyer-name" required placeholder="Ej. Juan Pérez" class="w-full bg-zinc-800 light:bg-zinc-100 border-none rounded-xl p-3.5 text-white light:text-zinc-900 focus:ring-2 focus:ring-brand-blue outline-none transition-all">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-zinc-500 mb-1.5">Monto a Pagar (No editable)</label>
+                        <input type="text" id="locked-price" readonly class="w-full bg-zinc-950 light:bg-zinc-200 border-none rounded-xl p-3.5 text-brand-blue font-bold outline-none cursor-not-allowed">
+                    </div>
+
+                    <div>
+                        <label class="block text-xs font-semibold uppercase tracking-wider text-zinc-500 mb-1.5">Método de Pago</label>
+                        <select id="payment-method" class="w-full bg-zinc-800 light:bg-zinc-100 border-none rounded-xl p-3.5 text-white light:text-zinc-900 focus:ring-2 focus:ring-brand-blue outline-none transition-all cursor-pointer">
+                            <option value="">Selecciona un banco...</option>
+                            <option value="Nequi">Nequi</option>
+                            <option value="Daviplata">Daviplata</option>
+                            <option value="Bre-B (Llaves)">Bre-B (Llaves)</option>
+                        </select>
+                    </div>
+
+                    <!-- Bank Details Area -->
+                    <div id="bank-details" class="hidden p-4 rounded-2xl bg-brand-blue/10 border border-brand-blue/20">
+                        <p class="text-xs text-brand-blue font-bold uppercase mb-2">Datos de Transferencia:</p>
+                        <div class="flex justify-between items-center">
+                            <div>
+                                <p id="acc-number" class="text-lg font-mono text-white light:text-zinc-900 leading-none">000-000-0000</p>
+                                <p id="acc-owner" class="text-xs text-zinc-500 mt-1">Titular: Streamix Oficial</p>
+                            </div>
+                            <button type="button" onclick="copyAccount()" class="bg-brand-blue hover:bg-blue-600 text-white px-3 py-2 rounded-lg text-sm transition-colors">
+                                <i class="fas fa-copy mr-1"></i> Copiar
+                            </button>
+                        </div>
+                    </div>
+
+                    <div class="pt-2">
+                        <p class="text-[10px] text-zinc-500 text-center mb-4 italic">
+                            ⚠️ Recuerda realizar primero tu transferencia antes de presionar confirmar compra.
+                        </p>
+                        <button type="submit" class="w-full bg-brand-blue hover:bg-blue-600 text-white font-bold py-4 rounded-2xl shadow-lg shadow-brand-blue/30 transition-all active:scale-[0.98]">
+                            Confirmar Compra
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+
+    <!-- MODAL: ADMIN CMS -->
+    <div id="admin-modal" class="fixed inset-0 z-[70] hidden flex items-center justify-center p-4 bg-black/95">
+        <div class="bg-zinc-900 w-full max-w-4xl max-h-[90vh] overflow-hidden rounded-3xl border border-white/10 flex flex-col">
+            <div class="p-6 border-b border-white/5 flex justify-between items-center bg-zinc-900">
+                <h3 class="text-xl font-bold text-white"><i class="fas fa-user-shield mr-2 text-brand-blue"></i>Panel de Administración</h3>
+                <button onclick="closeModal('admin-modal')" class="text-zinc-500 hover:text-white"><i class="fas fa-times"></i></button>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto p-6 space-y-8">
+                <!-- Add Product Form -->
+                <section>
+                    <h4 class="text-sm font-bold text-zinc-500 uppercase tracking-widest mb-4">Añadir Nueva Plataforma</h4>
+                    <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                        <input type="text" id="new-name" placeholder="Nombre (ej. Netflix)" class="bg-zinc-800 rounded-xl p-3 text-white border-none focus:ring-2 focus:ring-brand-blue">
+                        <input type="text" id="new-price" placeholder="Precio (ej. 15.000)" class="bg-zinc-800 rounded-xl p-3 text-white border-none focus:ring-2 focus:ring-brand-blue">
+                        <input type="text" id="new-img" placeholder="URL de Imagen" class="bg-zinc-800 rounded-xl p-3 text-white border-none focus:ring-2 focus:ring-brand-blue">
+                        <button onclick="addProduct()" class="bg-brand-blue hover:bg-blue-600 text-white font-bold rounded-xl px-6 py-3 transition-colors">Agregar</button>
+                    </div>
+                </section>
+
+                <!-- Inventory Table -->
+                <section>
+                    <h4 class="text-sm font-bold text-zinc-500 uppercase tracking-widest mb-4">Gestión de Stock</h4>
+                    <div class="overflow-x-auto">
+                        <table class="w-full text-left">
+                            <thead class="text-zinc-500 text-xs uppercase border-b border-white/5">
+                                <tr>
+                                    <th class="pb-3 px-2">Producto</th>
+                                    <th class="pb-3 px-2">Precio</th>
+                                    <th class="pb-3 px-2">Stock Actual</th>
+                                    <th class="pb-3 px-2 text-right">Acción</th>
+                                </tr>
+                            </thead>
+                            <tbody id="admin-inventory-list" class="divide-y divide-white/5">
+                                <!-- Inventory items injected by JS -->
+                            </tbody>
+                        </table>
+                    </div>
+                </section>
+            </div>
+        </div>
+    </div>
+
+    <!-- SCRIPTS -->
+    <script>
+        // --- DATA INICIAL ---
+        const DEFAULT_PRODUCTS = [
+            { id: 1, name: "Netflix Premium", price: "$18.000", image: "https://images.unsplash.com/photo-1574375927938-d5a98e8ffe85?w=500&q=80", stock: 5 },
+            { id: 2, name: "Disney+ Anual", price: "$12.000", image: "https://images.unsplash.com/photo-1633431305705-c2438b770da5?w=500&q=80", stock: 2 },
+            { id: 3, name: "HBO Max (Max)", price: "$10.000", image: "https://images.unsplash.com/photo-1616469829581-73993eb86b02?w=500&q=80", stock: 0 },
+            { id: 4, name: "Prime Video", price: "$8.500", image: "https://images.unsplash.com/photo-1594918821994-41794113d482?w=500&q=80", stock: 10 }
+        ];
+
+        let products = JSON.parse(localStorage.getItem('streamix_products')) || DEFAULT_PRODUCTS;
+        let selectedProduct = null;
+        let clickCount = 0;
+
+        // --- CORE FUNCTIONS ---
+        function init() {
+            renderProducts();
+            setupTheme();
+        }
+
+        // Renderizado de Vitrina
+        function renderProducts() {
+            const grid = document.getElementById('product-grid');
+            grid.innerHTML = '';
+
+            products.forEach(p => {
+                const isOut = p.stock === 0;
+                let statusColor = 'bg-brand-blue';
+                let statusText = 'ACTIVO';
+
+                if (p.stock === 0) {
+                    statusColor = 'bg-red-600';
+                    statusText = 'AGOTADO';
+                } else if (p.stock <= 3) {
+                    statusColor = 'bg-orange-500';
+                    statusText = 'POCO STOCK';
+                }
+
+                const card = `
+                    <div class="relative group glass rounded-3xl p-4 card-shadow ${isOut ? 'opacity-60 grayscale-[0.5]' : ''}">
+                        <div class="absolute top-6 left-6 z-10">
+                            <span class="${statusColor} text-white text-[10px] font-black px-3 py-1 rounded-full shadow-lg">
+                                ${statusText}
+                            </span>
+                        </div>
+                        <div class="aspect-video w-full rounded-2xl overflow-hidden mb-4">
+                            <img src="${p.image}" class="w-full h-full object-cover group-hover:scale-110 transition-transform duration-500" alt="${p.name}">
+                        </div>
+                        <div class="px-2">
+                            <h3 class="text-xl font-bold text-white light:text-zinc-900 mb-1">${p.name}</h3>
+                            <p class="text-brand-blue font-extrabold text-2xl mb-6">${p.price}</p>
+                            <button 
+                                onclick="openPurchaseModal(${p.id})" 
+                                ${isOut ? 'disabled' : ''}
+                                class="w-full py-3.5 rounded-xl font-bold transition-all ${isOut ? 'bg-zinc-800 text-zinc-600 cursor-not-allowed' : 'bg-brand-blue text-white hover:bg-blue-600 active:scale-95 shadow-lg shadow-brand-blue/20'}">
+                                ${isOut ? 'No Disponible' : 'Comprar Ahora'}
+                            </button>
+                        </div>
+                    </div>
+                `;
+                grid.innerHTML += card;
+            });
+            saveData();
+        }
+
+        // --- COMPRA LOGIC ---
+        function openPurchaseModal(id) {
+            selectedProduct = products.find(p => p.id === id);
+            if (!selectedProduct || selectedProduct.stock <= 0) return;
+
+            document.getElementById('modal-product-info').innerHTML = `
+                <img src="${selectedProduct.image}" class="w-16 h-10 object-cover rounded-lg">
+                <div>
+                    <h4 class="text-white light:text-zinc-900 font-bold leading-tight">${selectedProduct.name}</h4>
+                    <p class="text-zinc-500 text-sm">Entrega inmediata</p>
+                </div>
+            `;
+            document.getElementById('locked-price').value = selectedProduct.price;
+            document.getElementById('purchase-modal').classList.remove('hidden');
+        }
+
+        document.getElementById('payment-method').addEventListener('change', function(e) {
+            const container = document.getElementById('bank-details');
+            const accNum = document.getElementById('acc-number');
+            const accOwn = document.getElementById('acc-owner');
+            
+            if (!e.target.value) {
+                container.classList.add('hidden');
+                return;
+            }
+
+            container.classList.remove('hidden');
+            if (e.target.value === 'Nequi') {
+                accNum.innerText = '312-409-3345';
+                accOwn.innerText = 'Titular: Admin Streamix';
+            } else if (e.target.value === 'Daviplata') {
+                accNum.innerText = '312-409-3345';
+                accOwn.innerText = 'Titular: Streamix Oficial';
+            } else {
+                accNum.innerText = 'streamix.pay@breb';
+                accOwn.innerText = 'Llave Transfiya / Bre-B';
+            }
+        });
+
+        document.getElementById('purchase-form').addEventListener('submit', function(e) {
+            e.preventDefault();
+            const buyer = document.getElementById('buyer-name').value;
+            const bank = document.getElementById('payment-method').value;
+
+            if (!bank) { alert('Selecciona un método de pago'); return; }
+
+            // Restar Stock
+            const idx = products.findIndex(p => p.id === selectedProduct.id);
+            if (products[idx].stock > 0) {
+                products[idx].stock -= 1;
+                saveData();
+                renderProducts();
+
+                // Formatear WhatsApp
+                const message = `¡Hola! Acabo de comprar una cuenta de ${selectedProduct.name} por valor de ${selectedProduct.price}. Mi nombre es ${buyer} y transferí desde ${bank}. Adjunto mi comprobante de pago aquí:`;
+                const encoded = encodeURIComponent(message);
+                const wpUrl = `https://wa.me/573124093345?text=${encoded}`;
+                
+                window.open(wpUrl, '_blank');
+                closeModal('purchase-modal');
+                this.reset();
+                document.getElementById('bank-details').classList.add('hidden');
+            }
+        });
+
+        // --- ADMIN CMS LOGIC ---
+        document.getElementById('logo-admin-trigger').addEventListener('click', () => {
+            clickCount++;
+            if (clickCount === 3) {
+                const pass = prompt("Acceso Restringido. Digite contraseña:");
+                if (pass === "darwin13") {
+                    openAdmin();
+                } else {
+                    alert("No autorizado");
+                }
+                clickCount = 0;
+            }
+            setTimeout(() => clickCount = 0, 2000); // Reset clicks after 2s
+        });
+
+        function openAdmin() {
+            const list = document.getElementById('admin-inventory-list');
+            list.innerHTML = '';
+            products.forEach((p, index) => {
+                list.innerHTML += `
+                    <tr class="group hover:bg-white/5 transition-colors">
+                        <td class="py-4 px-2 flex items-center gap-3">
+                            <img src="${p.image}" class="w-10 h-6 object-cover rounded">
+                            <span class="text-white font-medium">${p.name}</span>
+                        </td>
+                        <td class="py-4 px-2 text-zinc-400">${p.price}</td>
+                        <td class="py-4 px-2">
+                            <input type="number" value="${p.stock}" onchange="updateStock(${p.id}, this.value)" class="w-16 bg-zinc-800 text-white rounded-lg p-1 text-center border-none focus:ring-1 focus:ring-brand-blue">
+                        </td>
+                        <td class="py-4 px-2 text-right">
+                            <button onclick="deleteProduct(${p.id})" class="text-red-500 hover:text-red-400 p-2"><i class="fas fa-trash"></i></button>
+                        </td>
+                    </tr>
+                `;
+            });
+            document.getElementById('admin-modal').classList.remove('hidden');
+        }
+
+        function updateStock(id, val) {
+            const p = products.find(prod => prod.id === id);
+            if (p) p.stock = parseInt(val) || 0;
+            saveData();
+            renderProducts();
+        }
+
+        function addProduct() {
+            const name = document.getElementById('new-name').value;
+            const price = document.getElementById('new-price').value;
+            const img = document.getElementById('new-img').value;
+
+            if (!name || !price || !img) return alert("Completa todos los campos");
+
+            const newProd = {
+                id: Date.now(),
+                name,
+                price: price.startsWith('$') ? price : '$' + price,
+                image: img,
+                stock: 5
+            };
+
+            products.push(newProd);
+            saveData();
+            renderProducts();
+            openAdmin(); // Refresh list
+
+            document.getElementById('new-name').value = '';
+            document.getElementById('new-price').value = '';
+            document.getElementById('new-img').value = '';
+        }
+
+        function deleteProduct(id) {
+            if (confirm('¿Eliminar plataforma?')) {
+                products = products.filter(p => p.id !== id);
+                saveData();
+                renderProducts();
+                openAdmin();
+            }
+        }
+
+        // --- UTILS ---
+        function saveData() {
+            localStorage.setItem('streamix_products', JSON.stringify(products));
+        }
+
+        function closeModal(id) {
+            document.getElementById(id).classList.add('hidden');
+        }
+
+        function copyAccount() {
+            const text = document.getElementById('acc-number').innerText;
+            navigator.clipboard.writeText(text);
+            const btn = event.currentTarget;
+            const original = btn.innerHTML;
+            btn.innerHTML = '<i class="fas fa-check"></i>';
+            setTimeout(() => btn.innerHTML = original, 2000);
+        }
+
+        function setupTheme() {
+            const toggle = document.getElementById('theme-toggle');
+            const icon = document.getElementById('theme-icon');
+            const html = document.documentElement;
+
+            const savedTheme = localStorage.getItem('theme') || 'dark';
+            if (savedTheme === 'light') {
+                html.classList.remove('dark');
+                html.classList.add('light');
+                icon.className = 'fas fa-sun text-xl text-orange-500';
+            }
+
+            toggle.addEventListener('click', () => {
+                if (html.classList.contains('dark')) {
+                    html.classList.remove('dark');
+                    html.classList.add('light');
+                    icon.className = 'fas fa-sun text-xl text-orange-500';
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    html.classList.remove('light');
+                    html.classList.add('dark');
+                    icon.className = 'fas fa-moon text-xl text-brand-blue';
+                    localStorage.setItem('theme', 'dark');
+                }
+            });
+        }
+
+        // Init App
+        init();
+    </script>
+</body>
+</html>
