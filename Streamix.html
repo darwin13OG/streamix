@@ -301,13 +301,12 @@
                             <img src="${productImg}" onerror="this.onerror=null; this.src='${FALLBACK_IMAGE}';" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="${p.name}">
                         </div>
                         <div class="px-2">
-                        <div class="flex justify-between items-center mb-5">
+                     <div class="flex justify-between items-center mb-5">
                             <p class="text-brand-blue font-extrabold text-2xl">${p.price}</p>
                             <span class="text-xs font-medium text-zinc-400 dark:text-zinc-500 bg-zinc-100 dark:bg-zinc-800/50 px-2.5 py-1 rounded-md">
                                 ${p.stock} disponibles
                             </span>
                         </div>
-
                             <button 
                                 onclick="openPurchaseModal(${p.id})" 
                                 ${isOut ? 'disabled' : ''}
