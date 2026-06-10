@@ -483,18 +483,19 @@
                 stock: 5
             };
 
-            const { data, error } = await supabaseClient
-    .from('products')
-    .insert([newProd])
-    .select();
+                        const { data, error } = await supabaseClient
+                .from('products')
+                .insert([newProd])
+                .select();
 
-if (error) return alert("Error al guardar el nuevo producto en Supabase");
+            if (error) return alert("Error al guardar el nuevo producto en Supabase");
 
-if (data && data.length > 0) {
-    products.push(data[0]);
-} else {
-    products.push(newProd);
-}
+            if (data && data.length > 0) {
+                products.push(data[0]);
+            } else {
+                products.push(newProd);
+            }
+            
             
             renderProducts();
             openAdmin();
