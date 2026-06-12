@@ -257,7 +257,7 @@
             }
         }
 
-        function renderProducts() {
+    function renderProducts() {
             const grid = document.getElementById('product-grid');
             grid.innerHTML = '';
 
@@ -289,6 +289,9 @@
                 }
 
                 const productImg = p.image && p.image.trim() !== "" ? p.image : FALLBACK_IMAGE;
+                
+                // Si el producto no tiene duración en la base de datos, ponemos "30 Días" por defecto
+                const durationText = p.duration ? p.duration : "30 Días";
 
                 const card = `
                     <div class="relative group glass rounded-3xl p-4 card-shadow ${isOut ? 'opacity-60 grayscale-[0.3]' : ''}">
@@ -301,12 +304,18 @@
                             <img src="${productImg}" onerror="this.onerror=null; this.src='${FALLBACK_IMAGE}';" class="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500" alt="${p.name}">
                         </div>
                         <div class="px-2">
-                     <div class="flex justify-between items-center mb-5">
-                            <p class="text-brand-blue font-extrabold text-2xl">${p.price}</p>
-                            <span class="text-xs font-medium text-zinc-400 dark:text-zinc-500 bg-zinc-100 dark:bg-zinc-800/50 px-2.5 py-1 rounded-md">
-                                ${p.stock} disponibles
-                            </span>
-                        </div>
+                            <div class="flex justify-between items-center mb-2">
+                                <p class="text-brand-blue font-extrabold text-2xl">${p.price}</p>
+                                <span class="text-xs font-medium text-zinc-400 dark:text-zinc-500 bg-zinc-100 dark:bg-zinc-800/50 px-2.5 py-1 rounded-md">
+                                    ${p.stock} disponibles
+                                </span>
+                            </div>
+                            <!-- ETIQUETA DE TIEMPO / DURACIÓN -->
+                            <div class="flex justify-end mb-4">
+                                <span class="text-[11px] font-semibold text-zinc-400 dark:text-zinc-500 bg-zinc-100/50 dark:bg-zinc-800/30 px-2 py-0.5 rounded-md flex items-center gap-1">
+                                    <i class="far fa-clock text-[10px]"></i> ${durationText}
+                                </span>
+                            </div>
                             <button 
                                 onclick="openPurchaseModal(${p.id})" 
                                 ${isOut ? 'disabled' : ''}
