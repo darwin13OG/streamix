@@ -212,7 +212,7 @@
    <script>
        // --- CONFIGURACIÓN DE SUPABASE ---
        const SUPABASE_URL = "https://anhoncimcwqzektwfrba.supabase.co";
-       const SUPABASE_KEY = "sb_publishable_ySTefqTBxnMNN4JNvX6TejQ_PzYyR3u_"; // Asegúrate de que esta sea tu llave exacta si cambió
+       const SUPABASE_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImFuaG9uY2ltY3dxemVrdHdmcmJhIiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODA5NTk2MDgsImV4cCI6MjA5NjUzNTYwOH0.WBJ-VL-exooaKog_-MFCvpiYL9-4Rd3kHgqI3_GFlpI"; // Asegúrate de que esta sea tu llave exacta si cambió
        const supabaseClient = supabase.createClient(SUPABASE_URL, SUPABASE_KEY);
 
        // --- DATA INICIAL (Optimizada con imágenes estables de respaldo) ---
@@ -485,8 +485,7 @@
 
                         const { data, error } = await supabaseClient
                 .from('products')
-                .insert([newProd])
-                .select();
+                .insert([newProd]);
 
             if (error) return alert("Error al guardar el nuevo producto en Supabase");
 
